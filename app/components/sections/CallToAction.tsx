@@ -3,7 +3,7 @@
 import { siteConfig } from '../../config/site.config';
 
 const CallToAction = () => {
-  const { ctaText } = siteConfig.features;
+  const { ctaText } = siteConfig.finalCTA;
 
   const handleScroll = () => {
     const element = document.getElementById('finalcta');
