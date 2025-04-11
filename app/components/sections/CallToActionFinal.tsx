@@ -1,13 +1,31 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { siteConfig } from '../../config/site.config';
 import { linksConfig } from '../../config/links.config';
 import { trackEvent } from '../../lib/analytics';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Zap } from 'lucide-react';
 
 const CallToActionFinal = () => {
   const { headline, subheadline, ctaText, trialText } = siteConfig.finalCTA;
+
+  const prefersReducedMotion = useReducedMotion();
+  const [isMobileView, setIsMobileView] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    const handleResize = () => {
+      setIsMobileView(mediaQuery.matches);
+    };
+
+    handleResize();
+    mediaQuery.addEventListener('change', handleResize);
+
+    return () => mediaQuery.removeEventListener('change', handleResize);
+  }, []);
+
+  const shouldAnimateBackground = !isMobileView && !prefersReducedMotion;
 
   const handlePrimaryClick = () => {
     trackEvent({
@@ -25,31 +43,49 @@ const CallToActionFinal = () => {
       {/* Background elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0F3555] to-[#0B1D2A] z-0"></div>
 
-      {/* Animated accent shapes - Adjusted for mobile */}
+      {/* Animated accent shapes - Optimized for performance */}
       <motion.div
-        className="absolute top-10 sm:top-20 left-5 sm:left-10 w-48 sm:w-64 h-48 sm:h-64 bg-[#35C3FF]/5 rounded-full blur-3xl z-0"
-        animate={{
-          x: [0, 30, 0],
-          opacity: [0.5, 0.8, 0.5],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          repeatType: 'reverse',
-        }}
+        className="absolute top-10 sm:top-20 left-5 sm:left-10 w-48 sm:w-64 h-48 sm:h-64 bg-[#35C3FF]/5 rounded-full z-0 blur-2xl will-change-transform"
+        animate={
+          shouldAnimateBackground
+            ? {
+                x: [0, 20, 0], // Reduced movement range
+                opacity: [0.5, 0.7, 0.5], // Reduced opacity range
+              }
+            : undefined
+        }
+        transition={
+          shouldAnimateBackground
+            ? {
+                duration: 25, // Increased duration for smoother motion
+                repeat: Infinity,
+                repeatType: 'reverse',
+                ease: 'linear', // Changed to linear for smoother infinite animation
+              }
+            : undefined
+        }
       />
 
       <motion.div
-        className="absolute bottom-5 sm:bottom-10 right-5 sm:right-10 w-60 sm:w-80 h-60 sm:h-80 bg-[#35C3FF]/5 rounded-full blur-3xl z-0"
-        animate={{
-          x: [0, -40, 0],
-          opacity: [0.3, 0.6, 0.3],
-        }}
-        transition={{
-          duration: 15,
-          repeat: Infinity,
-          repeatType: 'reverse',
-        }}
+        className="absolute bottom-5 sm:bottom-10 right-5 sm:right-10 w-60 sm:w-80 h-60 sm:h-80 bg-[#35C3FF]/5 rounded-full z-0 blur-2xl will-change-transform"
+        animate={
+          shouldAnimateBackground
+            ? {
+                x: [0, -25, 0], // Reduced movement range
+                opacity: [0.3, 0.5, 0.3], // Reduced opacity range
+              }
+            : undefined
+        }
+        transition={
+          shouldAnimateBackground
+            ? {
+                duration: 30, // Increased duration for smoother motion
+                repeat: Infinity,
+                repeatType: 'reverse',
+                ease: 'linear', // Changed to linear for smoother infinite animation
+              }
+            : undefined
+        }
       />
 
       <div className="max-w-5xl mx-auto relative z-10">
